@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Home Projects</title>
+<link rel="manifest" id="manifest-link">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; }
+  .container { max-width: 640px; margin: 0 auto; padding: 16px; padding-bottom: 80px; }
+  h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+  .subtitle { font-size: 13px; color: #64748b; margin-top: 2px; margin-bottom: 16px; }
+
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .pill { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+  .pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pill-todo { background: #f1f5f9; color: #475569; } .pill-todo .pill-dot { background: #94a3b8; }
+  .pill-prog { background: #fffbeb; color: #b45309; } .pill-prog .pill-dot { background: #fbbf24; }
+  .pill-done { background: #ecfdf5; color: #047857; } .pill-done .pill-dot { background: #10b981; }
+  .pill-total { background: #eff6ff; color: #2563eb; }
+
+  input, select, textarea {
+    width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;
+    font-size: 16px; color: #1e293b; background: #fff; font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #60a5fa; border-color: transparent; }
+  textarea { resize: none; }
+
+  .search-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .filter-row { display: flex; gap: 8px; }
+  .filter-row select { flex: 1; }
+
+  .btn-photo {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px; border-radius: 12px; border: none;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    background: #2563eb; color: #fff; margin-bottom: 10px;
+  }
+  .btn-photo:active { background: #1d4ed8; }
+  .btn-photo:disabled { background: #dbeafe; color: #93c5fd; }
+  .btn-manual {
+    width: 100%; padding: 11px; border-radius: 12px; margin-bottom: 18px;
+    border: 2px dashed #cbd5e1; background: transparent; color: #64748b;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+  }
+  .btn-settings {
+    position: fixed; bottom: 16px; right: 16px; width: 48px; height: 48px;
+    border-radius: 24px; border: none; background: #1e293b; color: #fff;
+    font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10;
+  }
+
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+  .card-body { padding: 14px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .photo-ref { background: #1e293b; color: #fff; font-size: 11px; font-family: monospace; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+  .category { font-size: 12px; color: #64748b; font-weight: 500; }
+  .status-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 999px; border: none; cursor: pointer; white-space: nowrap; }
+  .card h3 { font-size: 16px; font-weight: 600; line-height: 1.35; margin-bottom: 4px; }
+  .card .desc { font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 8px; }
+  .card-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .difficulty { font-size: 12px; font-weight: 600; }
+  .diff-Easy { color: #059669; } .diff-Moderate { color: #d97706; } .diff-Hard { color: #ea580c; } .diff-HireOut { color: #dc2626; }
+  .toggle-details { font-size: 12px; color: #3b82f6; font-weight: 500; background: none; border: none; cursor: pointer; padding: 4px; }
+
+  .details { border-top: 1px solid #f1f5f9; background: #f8fafc; padding: 14px; }
+  .details-section { margin-bottom: 12px; }
+  .details-label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .details-text { font-size: 14px; color: #334155; line-height: 1.5; }
+  .details-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+  .btn-sm { font-size: 12px; padding: 7px 14px; border-radius: 8px; cursor: pointer; background: #fff; }
+  .btn-edit { border: 1px solid #e2e8f0; color: #475569; }
+  .btn-delete { border: 1px solid #fecaca; color: #ef4444; }
+
+  .empty { text-align: center; padding: 60px 0; color: #94a3b8; }
+  .empty .emoji { font-size: 36px; margin-bottom: 12px; }
+
+  /* Full-screen sheet */
+  .sheet { position: fixed; inset: 0; z-index: 50; background: #fff; display: none; flex-direction: column; }
+  .sheet.open { display: flex; }
+  .sheet-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
+  }
+  .sheet-title { font-weight: 700; font-size: 16px; }
+  .sheet-close {
+    width: 36px; height: 36px; border-radius: 18px; border: none;
+    background: #f1f5f9; color: #475569; font-size: 16px; font-weight: 700; cursor: pointer;
+  }
+  .sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: 40px; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .required-box { background: #f8fafc; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  .required-box .box-title { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+
+  .sheet-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 8px; }
+  .btn-cancel { padding: 10px 16px; border-radius: 8px; border: none; background: transparent; color: #475569; font-size: 14px; cursor: pointer; }
+  .btn-save { padding: 10px 20px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-remove-item { padding: 8px 12px; border-radius: 8px; border: 1px solid #fecaca; background: #fff; color: #ef4444; font-size: 12px; cursor: pointer; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; border: none; cursor: pointer; background: #f1f5f9; color: #475569; }
+  .tab.active { background: #2563eb; color: #fff; }
+
+  .error-msg { font-size: 12px; color: #ef4444; text-align: center; margin-top: 6px; }
+  .info-msg { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 14px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .api-warning { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 12px; font-size: 13px; color: #92400e; line-height: 1.5; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Home Projects</h1>
+  <p class="subtitle">Repairs · Touch-ups · Finishing · Maintenance</p>
+
+  <div class="pills" id="pills"></div>
+
+  <div class="search-row">
+    <input type="text" id="search" placeholder="Search by title, photo ref, equipment...">
+    <div class="filter-row">
+      <select id="filterStatus">
+        <option value="All">All Statuses</option>
+        <option>To Do</option><option>In Progress</option><option>Done</option>
+      </select>
+      <select id="filterCategory">
+        <option value="All">All Categories</option>
+        <option>Repair</option><option>Touch-Up</option><option>Finishing</option><option>Maintenance</option><option>Inspection</option>
+      </select>
+    </div>
+  </div>
+
+  <input type="file" id="photoInput" accept="image/*" style="display:none">
+  <button class="btn-photo" id="photoBtn">
+    <span id="photoBtnContent">📸 Add Photo — AI Analyzes &amp; Fills In</span>
+  </button>
+  <p class="error-msg" id="photoError" style="display:none"></p>
+
+  <button class="btn-manual" id="manualBtn">+ Add Manually</button>
+
+  <div id="projectList"></div>
+</div>
+
+<button class="btn-settings" id="settingsBtn" title="Settings">⚙</button>
+
+<!-- Edit/Add sheet -->
+<div class="sheet" id="editSheet">
+  <div class="sheet-header">
+    <span class="sheet-title" id="editTitle">Add Project</span>
+    <button class="sheet-close" onclick="closeSheet('editSheet')">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field-row">
+      <div class="field"><label>Photo Ref #</label><input id="f_photoRef"></div>
+      <div class="field"><label>Category</label>
+        <select id="f_category"><option>Repair</option><option>Touch-Up</option><option>Finishing</option><option>Maintenance</option><option>Inspection</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Project Title *</label><input id="f_title" placeholder="e.g. Patch drywall above window"></div>
+    <div class="field"><label>Description</label><textarea id="f_description" rows="3"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Status</label>
+        <select id="f_status"><option>To Do</option><option>In Progress</option><option>Done</option></select>
+      </div>
+      <div class="field"><label>Difficulty</label>
+        <select id="f_difficulty"><option>Easy</option><option selected>Moderate</option><option>Hard</option><option>Hire Out</option></select>
+      </div>
+    </div>
+    <div class="required-box">
+      <div class="box-title">What's Required</div>
+      <div class="field"><label>Skills Needed</label><input id="f_skills"></div>
+      <div class="field"><label>Knowledge / Know-How</label><input id="f_knowledge"></div>
+      <div class="field"><label>Equipment &amp; Materials</label><input id="f_equipment"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="f_notes" rows="2"></textarea></div>
+    <div class="sheet-footer">
+      <span></span>
+      <div>
+        <button class="btn-cancel" onclick="closeSheet('editSheet')">Cancel</button>
+        <button class="btn-save" id="saveBtn">Save Project</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Review sheet -->
+<div class="sheet" id="reviewSheet">
+  <div class="sheet-header">
+    <span class="sheet-title">Review AI Analysis</span>
+    <button class="sheet-close" onclick="closeSheet('reviewSheet')">✕</button>
+  </div>
+  <div class="sheet-body">
+    <p class="info-msg" id="reviewInfo"></p>
+    <div class="tabs" id="reviewTabs"></div>
+    <div class="field-row">
+      <div class="field"><label>Photo Ref #</label><input id="r_photoRef"></div>
+      <div class="field"><label>Category</label>
+        <select id="r_category"><option>Repair</option><option>Touch-Up</option><option>Finishing</option><option>Maintenance</option><option>Inspection</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Project Title</label><input id="r_title"></div>
+    <div class="field"><label>Description</label><textarea id="r_description" rows="3"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Status</label>
+        <select id="r_status"><option>To Do</option><option>In Progress</option><option>Done</option></select>
+      </div>
+      <div class="field"><label>Difficulty</label>
+        <select id="r_difficulty"><option>Easy</option><option>Moderate</option><option>Hard</option><option>Hire Out</option></select>
+      </div>
+    </div>
+    <div class="required-box">
+      <div class="box-title">What's Required</div>
+      <div class="field"><label>Skills Needed</label><input id="r_skills"></div>
+      <div class="field"><label>Knowledge / Know-How</label><input id="r_knowledge"></div>
+      <div class="field"><label>Equipment &amp; Materials</label><input id="r_equipment"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="r_notes" rows="2"></textarea></div>
+    <div class="sheet-footer">
+      <button class="btn-remove-item" id="removeItemBtn">Remove this item</button>
+      <div>
+        <button class="btn-cancel" onclick="closeSheet('reviewSheet')">Cancel</button>
+        <button class="btn-save" id="confirmReviewBtn">Save All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet" id="settingsSheet">
+  <div class="sheet-header">
+    <span class="sheet-title">Settings</span>
+    <button class="sheet-close" onclick="closeSheet('settingsSheet')">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="api-warning">
+      The photo analysis feature needs your Anthropic API key. Get one at console.anthropic.com.
+      Costs roughly a cent per photo. The key is stored only on this device.
+    </div>
+    <div class="field">
+      <label>Anthropic API Key</label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-...">
+    </div>
+    <div class="sheet-footer">
+      <button class="btn-remove-item" id="exportBtn">Export Data</button>
+      <button class="btn-save" id="saveSettingsBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Manifest (inline so this stays one file) ----
+const manifest = {
+  name: "Home Projects",
+  short_name: "Projects",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#f8fafc",
+  theme_color: "#2563eb",
+  icons: [{
+    src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%232563eb"/><text x="50" y="68" font-size="50" text-anchor="middle">🔧</text></svg>'),
+    sizes: "any",
+    type: "image/svg+xml"
+  }]
+};
+document.getElementById("manifest-link").href =
+  URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/json" }));
+
+// ---- State ----
+const STORAGE_KEY = "home-repair-masterlist-v1";
+const API_KEY_KEY = "anthropic-api-key";
+const STATUS_OPTIONS = ["To Do", "In Progress", "Done"];
+
+const SEED_PROJECTS = [
+  {
+    id: 1, photoRef: "1", title: "Patch & texture drywall cutout", category: "Repair",
+    difficulty: "Moderate", status: "To Do",
+    description: "Rectangular cutout in corner wall needs to be closed, mudded, and textured to match existing wall.",
+    skills: "Drywall patching, taping, feathering, texture matching",
+    knowledge: "How to cut and secure a backer board or drywall patch; how to mix and apply joint compound; how to match existing texture",
+    equipment: "Drywall patch, drywall screws, backer boards or clips, joint compound, putty knife, drywall tape, sandpaper (120/220), texture spray, primer, paint",
+    notes: "Existing wall has hand-applied texture — test match on scrap before committing. See Photo 2 for related outlet box issue in same room."
+  },
+  {
+    id: 2, photoRef: "2", title: "Extend outlet boxes — paneling removed", category: "Repair",
+    difficulty: "Moderate", status: "To Do",
+    description: "Outlet boxes are recessed behind drywall surface because old paneling was removed. Cover plates won't sit flush without box extensions.",
+    skills: "Basic electrical safety, box extension installation",
+    knowledge: "How to identify box depth needed; how to install electrical box extenders; when to call an electrician",
+    equipment: "Electrical box extenders (1/4\" or 1/2\" — measure each), screwdriver, outlet cover plates, non-contact voltage tester",
+    notes: "Turn off breaker before working. Measure each outlet — depth may vary. Pick up a few sizes."
+  }
+];
+
+let projects = loadProjects();
+let editTargetId = null;
+let reviewItems = [];
+let reviewIdx = 0;
+let expandedIds = new Set();
+
+function loadProjects() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { const p = JSON.parse(raw); if (p.length) return p; }
+  } catch {}
+  return SEED_PROJECTS.slice();
+}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); }
+
+// ---- Sheets ----
+function openSheet(id) { document.getElementById(id).classList.add("open"); }
+function closeSheet(id) { document.getElementById(id).classList.remove("open"); }
+
+// ---- Render ----
+const STATUS_CLASS = { "To Do": "pill-todo", "In Progress": "pill-prog", "Done": "pill-done" };
+
+function render() {
+  // pills
+  const counts = {};
+  STATUS_OPTIONS.forEach(s => counts[s] = projects.filter(p => p.status === s).length);
+  document.getElementById("pills").innerHTML =
+    STATUS_OPTIONS.map(s =>
+      `<div class="pill ${STATUS_CLASS[s]}"><span class="pill-dot"></span>${counts[s]} ${s}</div>`
+    ).join("") + `<div class="pill pill-total">${projects.length} Total</div>`;
+
+  // list
+  const q = document.getElementById("search").value.toLowerCase();
+  const fs = document.getElementById("filterStatus").value;
+  const fc = document.getElementById("filterCategory").value;
+
+  const filtered = projects.filter(p => {
+    if (fs !== "All" && p.status !== fs) return false;
+    if (fc !== "All" && p.category !== fc) return false;
+    if (q) return (p.title || "").toLowerCase().includes(q) ||
+      (p.description || "").toLowerCase().includes(q) ||
+      (p.photoRef || "").includes(q) ||
+      (p.equipment || "").toLowerCase().includes(q);
+    return true;
+  });
+
+  const list = document.getElementById("projectList");
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty"><div class="emoji">🔧</div><div><b>No projects yet</b></div><div style="font-size:13px;margin-top:4px">Take a photo or add one manually</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const exp = expandedIds.has(p.id);
+    const diffClass = "diff-" + p.difficulty.replace(" ", "");
+    return `<div class="card">
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            ${p.photoRef ? `<span class="photo-ref">#${esc(p.photoRef)}</span>` : ""}
+            <span class="category">${esc(p.category)}</span>
+          </div>
+          <button class="status-btn ${STATUS_CLASS[p.status]}" onclick="cycleStatus(${p.id})">
+            <span class="pill-dot"></span>${p.status}
+          </button>
+        </div>
+        <h3>${esc(p.title)}</h3>
+        ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ""}
+        <div class="card-bottom">
+          <span class="difficulty ${diffClass}">${esc(p.difficulty)}</span>
+          <button class="toggle-details" onclick="toggleDetails(${p.id})">${exp ? "Hide details" : "Show details"}</button>
+        </div>
+      </div>
+      ${exp ? `<div class="details">
+        ${detailSection("Skills", p.skills)}
+        ${detailSection("Knowledge", p.knowledge)}
+        ${detailSection("Equipment & Materials", p.equipment)}
+        ${detailSection("Notes", p.notes)}
+        <div class="details-actions">
+          <button class="btn-sm btn-edit" onclick="openEdit(${p.id})">Edit</button>
+          <button class="btn-sm btn-delete" onclick="deleteProject(${p.id})">Delete</button>
+        </div>
+      </div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function detailSection(label, text) {
+  if (!text) return "";
+  return `<div class="details-section"><div class="details-label">${label}</div><div class="details-text">${esc(text)}</div></div>`;
+}
+
+function esc(s) {
+  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// ---- Actions ----
+function cycleStatus(id) {
+  projects = projects.map(p => {
+    if (p.id !== id) return p;
+    const i = STATUS_OPTIONS.indexOf(p.status);
+    return { ...p, status: STATUS_OPTIONS[(i + 1) % 3] };
+  });
+  save(); render();
+}
+
+function toggleDetails(id) {
+  expandedIds.has(id) ? expandedIds.delete(id) : expandedIds.add(id);
+  render();
+}
+
+function deleteProject(id) {
+  if (confirm("Delete this project?")) {
+    projects = projects.filter(p => p.id !== id);
+    save(); render();
+  }
+}
+
+const FIELDS = ["photoRef", "category", "title", "description", "status", "difficulty", "skills", "knowledge", "equipment", "notes"];
+
+function openEdit(id) {
+  editTargetId = id;
+  const p = id ? projects.find(x => x.id === id) : null;
+  document.getElementById("editTitle").textContent = p ? "Edit Project" : "Add Project";
+  FIELDS.forEach(f => {
+    document.getElementById("f_" + f).value = p ? (p[f] || "") : (f === "category" ? "Repair" : f === "status" ? "To Do" : f === "difficulty" ? "Moderate" : "");
+  });
+  if (!p) {
+    const next = Math.max(0, ...projects.map(x => parseInt(x.photoRef) || 0)) + 1;
+    document.getElementById("f_photoRef").value = String(next);
+  }
+  openSheet("editSheet");
+}
+
+document.getElementById("manualBtn").onclick = () => openEdit(null);
+document.getElementById("saveBtn").onclick = () => {
+  const title = document.getElementById("f_title").value.trim();
+  if (!title) { alert("Title is required"); return; }
+  const data = {};
+  FIELDS.forEach(f => data[f] = document.getElementById("f_" + f).value);
+  if (editTargetId) {
+    projects = projects.map(p => p.id === editTargetId ? { ...p, ...data } : p);
+  } else {
+    projects.push({ id: Date.now(), ...data });
+  }
+  save(); render(); closeSheet("editSheet");
+};
+
+// ---- Photo + AI ----
+const photoBtn = document.getElementById("photoBtn");
+const photoInput = document.getElementById("photoInput");
+const photoBtnContent = document.getElementById("photoBtnContent");
+const photoError = document.getElementById("photoError");
+
+photoBtn.onclick = () => {
+  if (!localStorage.getItem(API_KEY_KEY)) {
+    openSheet("settingsSheet");
+    return;
+  }
+  photoInput.click();
+};
+
+photoInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  photoBtn.disabled = true;
+  photoBtnContent.innerHTML = '<span class="spinner"></span> Analyzing photo...';
+  photoError.style.display = "none";
+  try {
+    const base64 = await fileToBase64(file);
+    const results = await analyzePhoto(base64, file.type || "image/jpeg");
+    if (!Array.isArray(results) || !results.length) throw new Error("No issues detected in photo");
+    const nextRef = String(Math.max(0, ...projects.map(x => parseInt(x.photoRef) || 0)) + 1);
+    reviewItems = results.map((r, i) => ({
+      id: Date.now() + i, photoRef: nextRef, status: "To Do",
+      category: r.category || "Repair", difficulty: r.difficulty || "Moderate",
+      title: r.title || "", description: r.description || "",
+      skills: r.skills || "", knowledge: r.knowledge || "",
+      equipment: r.equipment || "", notes: r.notes || ""
+    }));
+    reviewIdx = 0;
+    renderReview();
+    openSheet("reviewSheet");
+  } catch (err) {
+    photoError.textContent = (err.message || "Analysis failed") + " — try again";
+    photoError.style.display = "block";
+  }
+  photoBtn.disabled = false;
+  photoBtnContent.innerHTML = "📸 Add Photo — AI Analyzes &amp; Fills In";
+  photoInput.value = "";
+};
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(",")[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function analyzePhoto(base64, mediaType) {
+  const apiKey = localStorage.getItem(API_KEY_KEY);
+  const prompt = `You are analyzing a home repair photo for a homeowner's project tracker.
+Examine this photo carefully and identify ALL repair, touch-up, finishing, or maintenance issues visible.
+
+Respond ONLY with a valid JSON array (no markdown, no backticks, no explanation). Each element is one distinct issue:
+
+[{"title":"Short title","category":"Repair","difficulty":"Moderate","description":"1-2 sentences","skills":"comma separated","knowledge":"what to know","equipment":"materials and tools","notes":"warnings or tips"}]
+
+category must be one of: Repair, Touch-Up, Finishing, Maintenance, Inspection
+difficulty must be one of: Easy, Moderate, Hard, Hire Out
+Be specific and practical.`;
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+          { type: "text", text: prompt }
+        ]
+      }]
+    })
+  });
+
+  if (!resp.ok) {
+    const errBody = await resp.json().catch(() => ({}));
+    throw new Error(errBody.error?.message || ("API error " + resp.status));
+  }
+  const data = await resp.json();
+  const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
+  return JSON.parse(text.replace(/```json|```/g, "").trim());
+}
+
+// ---- Review sheet ----
+const R_FIELDS = ["photoRef", "category", "title", "description", "status", "difficulty", "skills", "knowledge", "equipment", "notes"];
+
+function renderReview() {
+  document.getElementById("reviewInfo").textContent =
+    `Found ${reviewItems.length} issue${reviewItems.length !== 1 ? "s" : ""}. Edit if needed, then save.`;
+  document.getElementById("reviewTabs").innerHTML = reviewItems.length > 1
+    ? reviewItems.map((it, i) =>
+        `<button class="tab ${i === reviewIdx ? "active" : ""}" onclick="switchReview(${i})">${i + 1}. ${esc(it.title.slice(0, 18))}</button>`
+      ).join("")
+    : "";
+  const p = reviewItems[reviewIdx];
+  R_FIELDS.forEach(f => document.getElementById("r_" + f).value = p[f] || "");
+  document.getElementById("confirmReviewBtn").textContent =
+    `Save ${reviewItems.length} Project${reviewItems.length !== 1 ? "s" : ""}`;
+}
+
+function captureReviewFields() {
+  if (!reviewItems[reviewIdx]) return;
+  R_FIELDS.forEach(f => reviewItems[reviewIdx][f] = document.getElementById("r_" + f).value);
+}
+
+function switchReview(i) { captureReviewFields(); reviewIdx = i; renderReview(); }
+
+document.getElementById("removeItemBtn").onclick = () => {
+  reviewItems.splice(reviewIdx, 1);
+  if (!reviewItems.length) { closeSheet("reviewSheet"); return; }
+  reviewIdx = Math.min(reviewIdx, reviewItems.length - 1);
+  renderReview();
+};
+
+document.getElementById("confirmReviewBtn").onclick = () => {
+  captureReviewFields();
+  projects.push(...reviewItems);
+  save(); render(); closeSheet("reviewSheet");
+};
+
+// ---- Settings ----
+document.getElementById("settingsBtn").onclick = () => {
+  document.getElementById("apiKeyInput").value = localStorage.getItem(API_KEY_KEY) || "";
+  openSheet("settingsSheet");
+};
+document.getElementById("saveSettingsBtn").onclick = () => {
+  const key = document.getElementById("apiKeyInput").value.trim();
+  if (key) localStorage.setItem(API_KEY_KEY, key);
+  else localStorage.removeItem(API_KEY_KEY);
+  closeSheet("settingsSheet");
+};
+document.getElementById("exportBtn").onclick = () => {
+  const blob = new Blob([JSON.stringify(projects, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "home-projects-backup.json";
+  a.click();
+};
+
+// ---- Filters ----
+["search", "filterStatus", "filterCategory"].forEach(id =>
+  document.getElementById(id).addEventListener("input", render)
+);
+
+render();
+</script>
+</body>
+</html>
